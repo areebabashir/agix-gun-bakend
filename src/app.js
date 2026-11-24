@@ -132,6 +132,15 @@ function device(req, res, next) {
 }
 const number = (v, min, max) =>
   typeof v === "number" && Number.isFinite(v) && v >= min && v <= max;
+app.get("/", (_req, res) =>
+  res.json({
+    ok: true,
+    service: "AEGIS-X API",
+    health: "/api/health",
+    dbStatus: "/api/db-status",
+    time: new Date().toISOString(),
+  }),
+);
 app.get("/api/health", (_req, res) =>
   res.json({
     ok: true,
