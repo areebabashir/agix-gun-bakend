@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { randomUUID } from "crypto";
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
@@ -37,6 +38,7 @@ const readingSchema = new mongoose.Schema(
 readingSchema.index({ timestamp: -1 });
 const eventSchema = new mongoose.Schema(
   {
+    id: { type: String, default: () => randomUUID() },
     deviceId: { type: String, default: "ESP32-01" },
     type: { type: String, required: true },
     message: { type: String, default: "" },
