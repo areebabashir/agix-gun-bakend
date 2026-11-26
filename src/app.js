@@ -8,6 +8,8 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
 import { analyzeSensorHealth } from "./ai/sensorHealth.js";
+import requireDashboardAuth from "./middleware/requireDashboardAuth.js";
+import voiceRoutes from "./routes/voiceRoutes.js";
 
 // =====================================
 // EXPRESS CONFIGURATION
@@ -293,27 +295,7 @@ const wrap = (fn) => (req, res, next) =>
 
 const secret = () => process.env.JWT_SECRET;
 
-function auth(req, res, next) {
-  try {
-    if (!secret()) {
-      return res.status(503).json({
-        error: "JWT_SECRET not configured",
-      });
-    }
-
-    const token = (
-      req.headers.authorization || ""
-    ).replace(/^Bearer\s+/i, "");
-
-    req.user = jwt.verify(token, secret());
-
-    next();
-  } catch {
-    return res.status(401).json({
-      error: "Unauthorized",
-    });
-  }
-}
+const auth = requireDashboardAuth;
 
 // =====================================
 // ESP32 DEVICE AUTHENTICATION
@@ -1065,6 +1047,12 @@ app.post(
     });
   })
 );
+
+// =====================================
+// VOICE / REMOTE DEVICE COMMAND ROUTES
+// =====================================
+
+app.use("/api/voice", db, voiceRoutes);
 
 // =====================================
 // GLOBAL ERROR HANDLER
